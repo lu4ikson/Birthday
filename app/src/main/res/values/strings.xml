@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Birthday</string>
+    <string name="button_add">Добавить</string>
+    <string name="button_delete">Удалить</string>
+    <string name="button_full_list">Полная база</string>
+    <string name="dialog_add_title">Добавить человека</string>
+    <string name="button_save">Сохранить</string>
+    <string name="button_cancel">Отмена</string>
+    <string name="error_name_required">Введите имя</string>
+    <string name="error_year_required">Введите год</string>
+    <string name="notify_time_format">Время: %1$02d:%2$02d</string>
+
+
+    <string-array name="months">
+        <item>Январь</item>
+        <item>Февраль</item>
+        <item>Март</item>
+        <item>Апрель</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Август</item>
+        <item>Сентябрь</item>
+        <item>Октябрь</item>
+        <item>Ноябрь</item>
+        <item>Декабрь</item>
+    </string-array>
+</resources>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Имя"
+        android:inputType="textPersonName"
+        android:maxLines="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
+
+        <NumberPicker
+            android:id="@+id/numberPickerDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/spinnerMonth"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp" />
+
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/checkBoxYearKnown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Известен год рождения"
+        android:layout_marginTop="12dp" />
+
+    <EditText
+        android:id="@+id/editTextYear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Год (например 1998)"
+        android:inputType="number"
+        android:maxLength="4"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/checkBoxNotify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Уведомить за день до"
+        android:layout_marginTop="12dp" />
+
+    <TextView
+        android:id="@+id/textNotifyTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:textColor="?attr/colorPrimary"
+        android:visibility="gone" />
+
+</LinearLayout>
