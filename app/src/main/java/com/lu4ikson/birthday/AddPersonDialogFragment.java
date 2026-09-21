@@ -96,6 +96,7 @@ public class AddPersonDialogFragment extends DialogFragment {
         textNotifyTime.setText(getString(R.string.notify_time_format, notifyHour, notifyMinute));
     }
 
+
     private boolean trySave() {
         String name = editTextName.getText().toString().trim();
         if (TextUtils.isEmpty(name)) {
