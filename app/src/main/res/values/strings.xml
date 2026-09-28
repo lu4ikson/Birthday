@@ -9,6 +9,8 @@
     <string name="error_name_required">Введите имя</string>
     <string name="error_year_required">Введите год</string>
     <string name="notify_time_format">Время: %1$02d:%2$02d</string>
+    <string name="button_import">Импорт</string>
+    <string name="button_export">Экспорт</string>
 
 
     <string-array name="months">

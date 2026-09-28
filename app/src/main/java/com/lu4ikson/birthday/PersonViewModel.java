@@ -34,4 +34,8 @@ public class PersonViewModel extends AndroidViewModel {
     public void delete(Person person) {
         repository.delete(person);
     }
+    //метод-обертка
+    public void importPeople(List<Person> newPeople, PersonRepository.ImportCallback callback) {
+        repository.importPeople(newPeople, callback);
+    }
 }
