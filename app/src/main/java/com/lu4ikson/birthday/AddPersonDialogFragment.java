@@ -33,6 +33,21 @@ public class AddPersonDialogFragment extends DialogFragment {
     private int notifyHour = 20;
     private int notifyMinute = 0;
 
+    private static final int[] DAYS_IN_MONTH = {
+            31, // Январь
+            29, // Февраль —  29 пофиксить потом
+            31, // Март
+            30, // Апрель
+            31, // Май
+            30, // Июнь
+            31, // Июль
+            31, // Август
+            30, // Сентябрь
+            31, // Октябрь
+            30, // Ноябрь
+            31  // Декабрь
+    };
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -55,6 +70,20 @@ public class AddPersonDialogFragment extends DialogFragment {
                 requireContext(), R.array.months, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMonth.setAdapter(monthAdapter);
+        //чек выбора месяца
+        spinnerMonth.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+                updateDayPickerForMonth(position);
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+            }
+        });
+
+        //для старых версий Андроид, обычно ставится по дефолту Январь, но onItemSelected в некоторых версиях Android может не сработать автоматически при первой отрисовке
+        updateDayPickerForMonth(spinnerMonth.getSelectedItemPosition());
 
         checkBoxYearKnown.setOnCheckedChangeListener((buttonView, isChecked) ->
                 editTextYear.setVisibility(isChecked ? View.VISIBLE : View.GONE));
@@ -94,6 +123,16 @@ public class AddPersonDialogFragment extends DialogFragment {
 
     private void updateNotifyTimeText() {
         textNotifyTime.setText(getString(R.string.notify_time_format, notifyHour, notifyMinute));
+    }
+    private void updateDayPickerForMonth(int monthIndex) {
+        int maxDay = DAYS_IN_MONTH[monthIndex];
+
+        // Если текущее выбранное число больше нового максимума — сначала уменьшаем value,
+        // потом maxValue. Обратный порядок иногда работает некорректно у NumberPicker.
+        if (numberPickerDay.getValue() > maxDay) {
+            numberPickerDay.setValue(maxDay);
+        }
+        numberPickerDay.setMaxValue(maxDay);
     }
 
 
