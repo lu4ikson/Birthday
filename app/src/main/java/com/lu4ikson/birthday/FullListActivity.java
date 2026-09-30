@@ -29,6 +29,7 @@ public class FullListActivity extends AppCompatActivity {
     private PersonViewModel viewModel;
     private List<Person> allPeopleCache = new ArrayList<>();
     private String currentQuery = "";
+    private boolean deleteModeEnabled = false;
     private final ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
 
     private final ActivityResultLauncher<String> exportLauncher = registerForActivityResult(
@@ -99,6 +100,10 @@ public class FullListActivity extends AppCompatActivity {
 
         findViewById(R.id.buttonImport).setOnClickListener(v ->
                 importLauncher.launch(new String[]{"text/csv", "text/comma-separated-values", "*/*"}));
+        findViewById(R.id.buttonToggleDelete).setOnClickListener(v -> {
+            deleteModeEnabled = !deleteModeEnabled;
+            adapter.setDeleteMode(deleteModeEnabled);
+        });
     }
 
     private void applyFilter() {

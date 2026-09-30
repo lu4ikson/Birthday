@@ -26,6 +26,14 @@ public class PersonFullAdapter extends RecyclerView.Adapter<PersonFullAdapter.Vi
         notifyDataSetChanged();
     }
 
+    //метод удаления записей
+    private boolean deleteModeEnabled = false;
+
+    public void setDeleteMode(boolean enabled) {
+        this.deleteModeEnabled = enabled;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -39,6 +47,7 @@ public class PersonFullAdapter extends RecyclerView.Adapter<PersonFullAdapter.Vi
         Person person = items.get(position);
         holder.textFullInfo.setText(BirthdayUtils.formatFullText(person));
         holder.buttonDelete.setOnClickListener(v -> deleteListener.onDeleteClick(person));
+        holder.buttonDelete.setVisibility(deleteModeEnabled ? View.VISIBLE : View.GONE);
     }
 
     @Override
