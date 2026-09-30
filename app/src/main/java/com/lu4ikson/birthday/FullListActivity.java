@@ -69,10 +69,16 @@ public class FullListActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(PersonViewModel.class);
 
-        adapter = new PersonFullAdapter(person -> {
-            viewModel.delete(person);
-            AlarmScheduler.cancelAll(this, person.id);
-        });
+        adapter = new PersonFullAdapter(
+                person -> {
+                    viewModel.delete(person);
+                    AlarmScheduler.cancelAll(this, person.id);
+                },
+                person -> AddPersonDialogFragment.newInstanceForEdit(person)
+                        .show(getSupportFragmentManager(), "edit_person")
+        );
+
+
         recyclerView.setAdapter(adapter);
 
         viewModel.getAllPeople().observe(this, people -> {

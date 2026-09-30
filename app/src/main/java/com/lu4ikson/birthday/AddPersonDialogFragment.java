@@ -22,6 +22,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 public class AddPersonDialogFragment extends DialogFragment {
 
+    private static final String ARG_ID = "id";
+    private static final String ARG_NAME = "name";
+    private static final String ARG_DAY = "day";
+    private static final String ARG_MONTH = "month";
+    private static final String ARG_YEAR = "year";
+    private static final String ARG_NOTIFY = "notify";
+    private static final String ARG_NOTIFY_HOUR = "notify_hour";
+    private static final String ARG_NOTIFY_MINUTE = "notify_minute";
+
+    private static final int[] DAYS_IN_MONTH = {
+            31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    };
+
     private EditText editTextName;
     private NumberPicker numberPickerDay;
     private Spinner spinnerMonth;
@@ -33,20 +46,28 @@ public class AddPersonDialogFragment extends DialogFragment {
     private int notifyHour = 20;
     private int notifyMinute = 0;
 
-    private static final int[] DAYS_IN_MONTH = {
-            31, // Январь
-            29, // Февраль —  29 пофиксить потом
-            31, // Март
-            30, // Апрель
-            31, // Май
-            30, // Июнь
-            31, // Июль
-            31, // Август
-            30, // Сентябрь
-            31, // Октябрь
-            30, // Ноябрь
-            31  // Декабрь
-    };
+    private Integer editingPersonId = null; // null = режим добавления, не null = режим редактирования
+
+    public static AddPersonDialogFragment newInstanceForEdit(Person person) {
+        AddPersonDialogFragment fragment = new AddPersonDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_ID, person.id);
+        args.putString(ARG_NAME, person.name);
+        args.putInt(ARG_DAY, person.day);
+        args.putInt(ARG_MONTH, person.month);
+        if (person.year != null) {
+            args.putInt(ARG_YEAR, person.year);
+        }
+        args.putBoolean(ARG_NOTIFY, person.notifyDayBefore);
+        if (person.notifyHour != null) {
+            args.putInt(ARG_NOTIFY_HOUR, person.notifyHour);
+        }
+        if (person.notifyMinute != null) {
+            args.putInt(ARG_NOTIFY_MINUTE, person.notifyMinute);
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @NonNull
     @Override
@@ -70,10 +91,10 @@ public class AddPersonDialogFragment extends DialogFragment {
                 requireContext(), R.array.months, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMonth.setAdapter(monthAdapter);
-        //чек выбора месяца
+
         spinnerMonth.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, android.view.View view, int position, long id) {
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 updateDayPickerForMonth(position);
             }
 
@@ -81,8 +102,6 @@ public class AddPersonDialogFragment extends DialogFragment {
             public void onNothingSelected(android.widget.AdapterView<?> parent) {
             }
         });
-
-        //для старых версий Андроид, обычно ставится по дефолту Январь, но onItemSelected в некоторых версиях Android может не сработать автоматически при первой отрисовке
         updateDayPickerForMonth(spinnerMonth.getSelectedItemPosition());
 
         checkBoxYearKnown.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -102,8 +121,10 @@ public class AddPersonDialogFragment extends DialogFragment {
                 notifyHour, notifyMinute, true
         ).show());
 
+        boolean isEditMode = fillFromArgumentsIfEditing();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle(R.string.dialog_add_title)
+        builder.setTitle(isEditMode ? R.string.dialog_edit_title : R.string.dialog_add_title)
                 .setView(view)
                 .setPositiveButton(R.string.button_save, null)
                 .setNegativeButton(R.string.button_cancel, (dialog, which) -> dialog.dismiss());
@@ -121,20 +142,51 @@ public class AddPersonDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void updateNotifyTimeText() {
-        textNotifyTime.setText(getString(R.string.notify_time_format, notifyHour, notifyMinute));
+    // Возвращает true, если диалог открыт в режиме редактирования
+    private boolean fillFromArgumentsIfEditing() {
+        Bundle args = getArguments();
+        if (args == null || !args.containsKey(ARG_ID)) {
+            return false;
+        }
+
+        editingPersonId = args.getInt(ARG_ID);
+        editTextName.setText(args.getString(ARG_NAME));
+
+        int month = args.getInt(ARG_MONTH);
+        spinnerMonth.setSelection(month - 1); // может вызвать onItemSelected, если значение меняется
+
+        int day = args.getInt(ARG_DAY);
+        numberPickerDay.setValue(day);
+
+        if (args.containsKey(ARG_YEAR)) {
+            checkBoxYearKnown.setChecked(true);
+            editTextYear.setVisibility(View.VISIBLE);
+            editTextYear.setText(String.valueOf(args.getInt(ARG_YEAR)));
+        }
+
+        boolean notify = args.getBoolean(ARG_NOTIFY);
+        checkBoxNotify.setChecked(notify);
+        textNotifyTime.setVisibility(notify ? View.VISIBLE : View.GONE);
+        if (args.containsKey(ARG_NOTIFY_HOUR)) {
+            notifyHour = args.getInt(ARG_NOTIFY_HOUR);
+            notifyMinute = args.getInt(ARG_NOTIFY_MINUTE);
+            updateNotifyTimeText();
+        }
+
+        return true;
     }
+
     private void updateDayPickerForMonth(int monthIndex) {
         int maxDay = DAYS_IN_MONTH[monthIndex];
-
-        // Если текущее выбранное число больше нового максимума — сначала уменьшаем value,
-        // потом maxValue. Обратный порядок иногда работает некорректно у NumberPicker.
         if (numberPickerDay.getValue() > maxDay) {
             numberPickerDay.setValue(maxDay);
         }
         numberPickerDay.setMaxValue(maxDay);
     }
 
+    private void updateNotifyTimeText() {
+        textNotifyTime.setText(getString(R.string.notify_time_format, notifyHour, notifyMinute));
+    }
 
     private boolean trySave() {
         String name = editTextName.getText().toString().trim();
@@ -144,7 +196,7 @@ public class AddPersonDialogFragment extends DialogFragment {
         }
 
         int day = numberPickerDay.getValue();
-        int month = spinnerMonth.getSelectedItemPosition() + 1; // 0+1 январь 11+1 декабрь
+        int month = spinnerMonth.getSelectedItemPosition() + 1;
 
         Integer year = null;
         if (checkBoxYearKnown.isChecked()) {
@@ -164,12 +216,20 @@ public class AddPersonDialogFragment extends DialogFragment {
         }
 
         Context appContext = requireContext().getApplicationContext();
-
         PersonViewModel viewModel = new ViewModelProvider(requireActivity()).get(PersonViewModel.class);
-        viewModel.insert(person, id -> {
-            person.id = (int) id;
+
+        if (editingPersonId != null) {
+            person.id = editingPersonId;
+            viewModel.update(person);
+            AlarmScheduler.cancelAll(appContext, person.id);
             AlarmScheduler.scheduleAll(appContext, person);
-        });
+        } else {
+            viewModel.insert(person, id -> {
+                person.id = (int) id;
+                AlarmScheduler.scheduleAll(appContext, person);
+            });
+        }
+
         return true;
     }
 }

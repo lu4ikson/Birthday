@@ -4,6 +4,7 @@
     <string name="button_delete">Удалить</string>
     <string name="button_full_list">Полная база</string>
     <string name="dialog_add_title">Добавить человека</string>
+    <string name="dialog_edit_title">Редактировать</string>
     <string name="button_save">Сохранить</string>
     <string name="button_cancel">Отмена</string>
     <string name="error_name_required">Введите имя</string>

@@ -15,16 +15,21 @@ import java.util.List;
 public class PersonFullAdapter extends RecyclerView.Adapter<PersonFullAdapter.ViewHolder> {
 
     private final OnDeleteClickListener deleteListener;
-    private List<Person> items = new ArrayList<>();
-
-    public PersonFullAdapter(OnDeleteClickListener deleteListener) {
+    private final OnEditClickListener editListener;
+    public PersonFullAdapter(OnDeleteClickListener deleteListener, OnEditClickListener editListener) {
         this.deleteListener = deleteListener;
+        this.editListener = editListener;
     }
-
+    private List<Person> items = new ArrayList<>();
     public void setItems(List<Person> newItems) {
         this.items = newItems;
         notifyDataSetChanged();
     }
+    //метод редактирования записей
+    public interface OnEditClickListener {
+        void onEditClick(Person person);
+    }
+
 
     //метод удаления записей
     private boolean deleteModeEnabled = false;
@@ -48,6 +53,7 @@ public class PersonFullAdapter extends RecyclerView.Adapter<PersonFullAdapter.Vi
         holder.textFullInfo.setText(BirthdayUtils.formatFullText(person));
         holder.buttonDelete.setOnClickListener(v -> deleteListener.onDeleteClick(person));
         holder.buttonDelete.setVisibility(deleteModeEnabled ? View.VISIBLE : View.GONE);
+        holder.itemView.setOnClickListener(v -> editListener.onEditClick(person));
     }
 
     @Override
