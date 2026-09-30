@@ -51,6 +51,12 @@ public class FullListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_list);
+        //фикс обработки отступов
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fullListRoot), (v, insets) -> {
+            androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
